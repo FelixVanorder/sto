@@ -71,12 +71,23 @@ template<> unsigned long long standard_sto( const char * cstr ) { return std::st
 
 
 
+namespace
+{
+    template< class NumType > constexpr char const * stdsto_func_name( NumType const & );
+    template<> inline constexpr char const *  stdsto_func_name<  int8_t>(   int8_t const & ) { return    "     std::sto<int8_t>"; }
+    template<> inline constexpr char const *  stdsto_func_name< uint8_t>(  uint8_t const & ) { return   "     std::sto<uint8_t>"; }
+    template<> inline constexpr char const *  stdsto_func_name< int16_t>(  int16_t const & ) { return   "     std::sto<int16_t>"; }
+    template<> inline constexpr char const *  stdsto_func_name<uint16_t>( uint16_t const & ) { return  "     std::sto<uint16_t>"; }
+    template<> inline constexpr char const *  stdsto_func_name< int32_t>(  int32_t const & ) { return   "     std::sto<int32_t>"; }
+    template<> inline constexpr char const *  stdsto_func_name<uint32_t>( uint32_t const & ) { return  "     std::sto<uint32_t>"; }
+    template<> inline constexpr char const *  stdsto_func_name< int64_t>(  int64_t const & ) { return   "     std::sto<int64_t>"; }
+    template<> inline constexpr char const *  stdsto_func_name<uint64_t>( uint64_t const & ) { return  "     std::sto<uint64_t>"; }
+}
+template< class NumType >
+constexpr char const * parser_namespace( decltype(standard_sto< NumType >) ) { return stdsto_func_name(NumType()); }
 
 template< class NumType >
-constexpr char const * parser_namespace( decltype(standard_sto< NumType >) ) { return "     std"; }
-
-template< class NumType >
-constexpr char const * parser_namespace( decltype(vanorder::sto< NumType >) ) { return "vanorder"; } 
+constexpr char const * parser_namespace( decltype(vanorder::sto< NumType >) ) { return vanorder::utils::sto_func_name(NumType()); }
 
 
 
@@ -99,7 +110,7 @@ std::chrono::nanoseconds ppt( Parser parser )
 
     std::chrono::nanoseconds ns = end - start;
     auto ms = std::chrono::duration_cast< std::chrono::milliseconds >( ns );
-    std::cout << parser_namespace<NumType>(parser) << "::" << vanorder::utils::sto_func_name(ClearNumType()) 
+    std::cout << parser_namespace<NumType>(parser)
         << " for " << cycles << " cycles took: " << ms.count() << "ms. "
         << ((double)(ns.count()) / cycles) << "ns per cycle." 
         << std::endl;
