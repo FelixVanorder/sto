@@ -12,7 +12,7 @@ Additionally standard parsers have complicated interface, behaviour and implying
  * unsigned parsers convert negative numbers to unsigned form without explicit error
  * allows to setup baseness of number representation, when most of the time decimal and hexadecimal (and rarely octal) is used and even autodetection of number base.
 
-Need to mention theat it's good to have these interfaces, but not as the only ones available.
+Need to mention that it's good to have these interfaces, but not as the only ones available.
 
 So this library implement templates for parsing signed and unsinged integer numerics with very consistent error handling by exceptions.
 
