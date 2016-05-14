@@ -24,7 +24,7 @@ Just wrappers over `std::sto(f|d|ld)`.
 ## Tests
 
 Decimal parser passes total testing:
- * All values for all types (except for (u)int64_t which is (u)intmax_t in my system).
+ * All values for all types (except for `(u)int64_t` which is `(u)intmax_t` in my system).
  * Under/overflow tests for huge range out of the native domain.
  * Invalid characters in different places.
  * Empty strings.
@@ -33,7 +33,7 @@ Decimal parser passes total testing:
 
 ## Performance
 
-Because of absolute simplicity of interface the caculations is very simple and all unnecessary thing is eliminated which gives good results especially for small integer types.
+Because of absolute simplicity of interface the caculations is very simple and all unnecessary things is eliminated which gives good results especially for small integer types.
 See `test/test_benchmark_sto.cpp`.
 
 Example from my system:
