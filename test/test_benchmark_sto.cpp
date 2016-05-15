@@ -110,33 +110,32 @@ constexpr char const * parser_name( parser_type<NumType> fptr )
 }
 
 
-template< class NumType, size_t cycles, typename Parser >
-std::chrono::nanoseconds ppt( Parser parser )
+template< class NumType, size_t calls, typename Parser >
+std::chrono::nanoseconds benchmark( Parser parser )
 {
     using ClearNumType = typename std::remove_cv<NumType>::type;
 
     volatile ClearNumType numvalue = 0;
+
     const char * strnum = std::numeric_limits<NumType>::is_signed 
                           ? min_cstr( decltype(numvalue)() ) 
                           : max_cstr( decltype(numvalue)() );
 
     auto start = std::chrono::high_resolution_clock::now();
-    for( size_t i = 0; i < cycles; ++i )
+    for( size_t i = 0; i < calls; ++i )
     {
         numvalue = parser( strnum );
     }
-    auto end = std::chrono::high_resolution_clock::now();
+    auto finish = std::chrono::high_resolution_clock::now();
 
-    std::chrono::nanoseconds ns = end - start;
-
-    return ns;
+    return finish - start;
  }
  
 
 template< class NumType >
 bool performance_test( NumType )
 {
-    enum : size_t { cycles = 10*1000*1000 };
+    enum : size_t { calls = 10*1000*1000 };
 
     std::array< std::chrono::nanoseconds, 9 > test_durations;
     std::chrono::nanoseconds standard_ns = {};
@@ -146,7 +145,7 @@ bool performance_test( NumType )
         auto & ns = standard_ns;
         for( auto & duration : test_durations )
         {
-            duration = ppt< NumType, cycles >( parser );
+            duration = benchmark< NumType, calls >( parser );
         }
 
         std::sort( test_durations.begin(), test_durations.end() );
@@ -155,8 +154,8 @@ bool performance_test( NumType )
         auto ms = std::chrono::duration_cast< std::chrono::milliseconds >( ns );
 
         std::cout << parser_name<NumType>( parser )
-            << " for " << cycles << " cycles took: " << ms.count() << "ms. "
-            << ((double)(ns.count()) / cycles) << "ns per call."
+            << " for " << calls << " calls took: " << ms.count() << "ms. "
+            << ((double)(ns.count()) / calls) << "ns per call."
             << std::endl;
     }
     {
@@ -164,7 +163,7 @@ bool performance_test( NumType )
         auto & ns = vanorder_ns;
         for( auto & duration : test_durations )
         {
-            duration = ppt< NumType, cycles >( parser );
+            duration = benchmark< NumType, calls >( parser );
         }
 
         std::sort( test_durations.begin(), test_durations.end() );
@@ -173,8 +172,8 @@ bool performance_test( NumType )
         auto ms = std::chrono::duration_cast< std::chrono::milliseconds >( ns );
 
         std::cout << parser_name<NumType>( parser )
-            << " for " << cycles << " cycles took: " << ms.count() << "ms. "
-            << ((double)(ns.count()) / cycles) << "ns per call."
+            << " for " << calls << " calls took: " << ms.count() << "ms. "
+            << ((double)(ns.count()) / calls) << "ns per call."
             << std::endl;
     }
 

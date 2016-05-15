@@ -59,28 +59,28 @@ See `test/test_benchmark_sto.cpp`.
 
 Example for my system:
 ```
-     std::sto<int8_t> for 10000000 cycles took: 339ms. 33.9695ns per cycle.
-vanorder::sto<int8_t> for 10000000 cycles took: 120ms. 12.008ns per cycle.
+     std::sto<int8_t> for 10000000 calls took: 339ms. 33.9357ns per call.
+vanorder::sto<int8_t> for 10000000 calls took: 118ms. 11.8378ns per call.
 
-     std::sto<int16_t> for 10000000 cycles took: 392ms. 39.2101ns per cycle.
-vanorder::sto<int16_t> for 10000000 cycles took: 179ms. 17.9658ns per cycle.
+     std::sto<int16_t> for 10000000 calls took: 393ms. 39.3204ns per call.
+vanorder::sto<int16_t> for 10000000 calls took: 179ms. 17.952ns per call.
 
-     std::sto<int32_t> for 10000000 cycles took: 501ms. 50.1904ns per cycle.
-vanorder::sto<int32_t> for 10000000 cycles took: 316ms. 31.6899ns per cycle.
+     std::sto<int32_t> for 10000000 calls took: 504ms. 50.4429ns per call.
+vanorder::sto<int32_t> for 10000000 calls took: 316ms. 31.6767ns per call.
 
-     std::sto<int64_t> for 10000000 cycles took: 1142ms. 114.244ns per cycle.
-vanorder::sto<int64_t> for 10000000 cycles took: 906ms. 90.6654ns per cycle.
+     std::sto<int64_t> for 10000000 calls took: 1142ms. 114.244ns per call.
+vanorder::sto<int64_t> for 10000000 calls took: 905ms. 90.5819ns per call.
 
-     std::sto<uint8_t> for 10000000 cycles took: 344ms. 34.4799ns per cycle.
-vanorder::sto<uint8_t> for 10000000 cycles took: 114ms. 11.4482ns per cycle.
+     std::sto<uint8_t> for 10000000 calls took: 342ms. 34.2943ns per call.
+vanorder::sto<uint8_t> for 10000000 calls took: 115ms. 11.5372ns per call.
 
-     std::sto<uint16_t> for 10000000 cycles took: 380ms. 38.0922ns per cycle.
-vanorder::sto<uint16_t> for 10000000 cycles took: 148ms. 14.8693ns per cycle.
+     std::sto<uint16_t> for 10000000 calls took: 380ms. 38.0403ns per call.
+vanorder::sto<uint16_t> for 10000000 calls took: 149ms. 14.9052ns per call.
 
-     std::sto<uint32_t> for 10000000 cycles took: 539ms. 53.9712ns per cycle.
-vanorder::sto<uint32_t> for 10000000 cycles took: 210ms. 21.0983ns per cycle.
+     std::sto<uint32_t> for 10000000 calls took: 539ms. 53.9324ns per call.
+vanorder::sto<uint32_t> for 10000000 calls took: 210ms. 21.0826ns per call.
 
-     std::sto<uint64_t> for 10000000 cycles took: 1249ms. 124.953ns per cycle.
-vanorder::sto<uint64_t> for 10000000 cycles took: 827ms. 82.7162ns per cycle.
+     std::sto<uint64_t> for 10000000 calls took: 1249ms. 124.965ns per call.
+vanorder::sto<uint64_t> for 10000000 calls took: 829ms. 82.9425ns per call.
 
 ```
