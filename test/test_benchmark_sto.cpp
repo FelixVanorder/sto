@@ -117,7 +117,7 @@ std::chrono::nanoseconds benchmark( Parser parser )
 
     volatile ClearNumType numvalue = 0;
 
-    const char * strnum = std::numeric_limits<NumType>::is_signed 
+    const std::string strnum = std::numeric_limits<NumType>::is_signed
                           ? min_cstr( decltype(numvalue)() ) 
                           : max_cstr( decltype(numvalue)() );
 

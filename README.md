@@ -10,7 +10,7 @@ Additionally standard parsers have complicated interface, behaviour and implying
  * returning successful result when meet nondigit character, so caller need to check if this is end of string when format require strictly numbers
  * can depends on current C locale
  * unsigned parsers convert negative numbers to unsigned form without explicit error
- * allows to setup baseness of number representation, when most of the time decimal and hexadecimal (and rarely octal) is used and even autodetection of number base.
+ * allows to setup baseness of number representation, when most of the time decimal and hexadecimal (and rarely octal) is used, and even autodetection of number base.
 
 Need to mention that it's good to have these interfaces, but not as the only ones available.
 
@@ -57,30 +57,31 @@ Because of absolute simplicity of interface the caculations is very simple and a
 
 See `test/test_benchmark_sto.cpp`.
 
-Example for my system:
+On my system:
 ```
-     std::sto<int8_t> for 10000000 calls took: 339ms. 33.9357ns per call.
-vanorder::sto<int8_t> for 10000000 calls took: 118ms. 11.8378ns per call.
+     std::sto<int8_t> for 10000000 calls took: 328ms. 32.8565ns per call.
+vanorder::sto<int8_t> for 10000000 calls took: 104ms. 10.4836ns per call.
 
-     std::sto<int16_t> for 10000000 calls took: 393ms. 39.3204ns per call.
-vanorder::sto<int16_t> for 10000000 calls took: 179ms. 17.952ns per call.
+     std::sto<int16_t> for 10000000 calls took: 382ms. 38.2171ns per call.
+vanorder::sto<int16_t> for 10000000 calls took: 153ms. 15.3396ns per call.
 
-     std::sto<int32_t> for 10000000 calls took: 504ms. 50.4429ns per call.
-vanorder::sto<int32_t> for 10000000 calls took: 316ms. 31.6767ns per call.
+     std::sto<int32_t> for 10000000 calls took: 486ms. 48.6525ns per call.
+vanorder::sto<int32_t> for 10000000 calls took: 228ms. 22.8679ns per call.
 
-     std::sto<int64_t> for 10000000 calls took: 1142ms. 114.244ns per call.
-vanorder::sto<int64_t> for 10000000 calls took: 905ms. 90.5819ns per call.
+     std::sto<int64_t> for 10000000 calls took: 676ms. 67.676ns per call.
+vanorder::sto<int64_t> for 10000000 calls took: 390ms. 39.0338ns per call.
 
-     std::sto<uint8_t> for 10000000 calls took: 342ms. 34.2943ns per call.
-vanorder::sto<uint8_t> for 10000000 calls took: 115ms. 11.5372ns per call.
+     std::sto<uint8_t> for 10000000 calls took: 325ms. 32.5209ns per call.
+vanorder::sto<uint8_t> for 10000000 calls took: 94ms. 9.45724ns per call.
 
-     std::sto<uint16_t> for 10000000 calls took: 380ms. 38.0403ns per call.
-vanorder::sto<uint16_t> for 10000000 calls took: 149ms. 14.9052ns per call.
+     std::sto<uint16_t> for 10000000 calls took: 364ms. 36.4621ns per call.
+vanorder::sto<uint16_t> for 10000000 calls took: 132ms. 13.2965ns per call.
 
-     std::sto<uint32_t> for 10000000 calls took: 539ms. 53.9324ns per call.
-vanorder::sto<uint32_t> for 10000000 calls took: 210ms. 21.0826ns per call.
+     std::sto<uint32_t> for 10000000 calls took: 518ms. 51.8971ns per call.
+vanorder::sto<uint32_t> for 10000000 calls took: 192ms. 19.2719ns per call.
 
-     std::sto<uint64_t> for 10000000 calls took: 1249ms. 124.965ns per call.
-vanorder::sto<uint64_t> for 10000000 calls took: 829ms. 82.9425ns per call.
+     std::sto<uint64_t> for 10000000 calls took: 786ms. 78.6062ns per call.
+vanorder::sto<uint64_t> for 10000000 calls took: 359ms. 35.9652ns per call.
+
 
 ```
