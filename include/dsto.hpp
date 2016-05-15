@@ -62,7 +62,7 @@ namespace vanorder
             constexpr NumType cutoff =    std::numeric_limits< NumType >::min() / 10;
             constexpr NumType cutlim = -( std::numeric_limits< NumType >::min() % 10 );
 
-            if( result < cutoff or ( result == cutoff and c > cutlim ) )
+            if( result < cutoff or ( result == cutoff and c > ( cutlim - !is_neg ) ) )
             {
                 if( is_neg )
                 {
@@ -79,10 +79,6 @@ namespace vanorder
 
         if( not is_neg )
         {
-            if( result == std::numeric_limits<NumType>::min() )
-            {
-                throw std::overflow_error( utils::sto_func_name(result) );
-            }
             result = -result;
         }
 
