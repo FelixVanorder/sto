@@ -1,3 +1,5 @@
+#include <algorithm>
+#include <array>
 #include <chrono>
 #include <iostream>
 #include <string>
@@ -33,40 +35,40 @@ template<> constexpr char const * max_cstr<uint32_t>( uint32_t ) { return "42949
 template<> constexpr char const * max_cstr<uint64_t>( uint64_t ) { return "18446744073709551615"; }
 
 
-template< class NumType > NumType standard_sto( const char * cstr );
+template< class NumType > NumType standard_sto( std::string const & str );
 
-template<> int8_t    standard_sto( const char * cstr ) { return std::stoi( cstr ); }
-template<> int16_t   standard_sto( const char * cstr ) { return std::stoi( cstr ); }
-template<> int       standard_sto( const char * cstr ) { return std::stoi( cstr ); }
+template<> int8_t    standard_sto( std::string const & str ) { return std::stoi( str ); }
+template<> int16_t   standard_sto( std::string const & str ) { return std::stoi( str ); }
+template<> int       standard_sto( std::string const & str ) { return std::stoi( str ); }
 
 template<>
 std::enable_if<
     std::is_same< long, long long >::value == false
     , long
 >::type
-standard_sto( const char * cstr )
+standard_sto( std::string const & str )
 {
-    return std::stol( cstr );
+    return std::stol( str );
 }
 
-template<> long long standard_sto( const char * cstr ) { return std::stoll( cstr ); }
+template<> long long standard_sto( std::string const & str ) { return std::stoll( str ); }
 
 
-template<> uint8_t    standard_sto( const char * cstr ) { return std::stoul( cstr ); }
-template<> uint16_t   standard_sto( const char * cstr ) { return std::stoul( cstr ); }
-template<> uint32_t   standard_sto( const char * cstr ) { return std::stoul( cstr ); }
+template<> uint8_t    standard_sto( std::string const & str ) { return std::stoul( str ); }
+template<> uint16_t   standard_sto( std::string const & str ) { return std::stoul( str ); }
+template<> uint32_t   standard_sto( std::string const & str ) { return std::stoul( str ); }
 
 template<>
 std::enable_if<
     std::is_same< unsigned long, unsigned long long >::value == false
     , unsigned long
 >::type
-standard_sto( const char * cstr )
+standard_sto( std::string const & str )
 {
-    return std::stoul( cstr );
+    return std::stoul( str );
 }
 
-template<> unsigned long long standard_sto( const char * cstr ) { return std::stoull( cstr ); }
+template<> unsigned long long standard_sto( std::string const & str ) { return std::stoull( str ); }
 
 
 
@@ -83,12 +85,29 @@ namespace
     template<> inline constexpr char const *  stdsto_func_name< int64_t>(  int64_t const & ) { return   "     std::sto<int64_t>"; }
     template<> inline constexpr char const *  stdsto_func_name<uint64_t>( uint64_t const & ) { return  "     std::sto<uint64_t>"; }
 }
-template< class NumType >
-constexpr char const * parser_namespace( decltype(standard_sto< NumType >) ) { return stdsto_func_name(NumType()); }
+
 
 template< class NumType >
-constexpr char const * parser_namespace( decltype(vanorder::sto< NumType >) ) { return vanorder::utils::sto_func_name(NumType()); }
+using parser_type = NumType (*)( std::string const & );
 
+template< class NumType >
+parser_type< NumType > get_vanorder_parser()
+{
+    constexpr parser_type< NumType > parser = vanorder::sto< NumType >;
+    return parser;
+}
+
+
+template< class NumType >
+constexpr char const * parser_name( parser_type<NumType> fptr )
+{
+    return fptr == &standard_sto< NumType >
+            ? stdsto_func_name(NumType())
+            : fptr == get_vanorder_parser< NumType >()
+                ? vanorder::utils::sto_func_name(NumType())
+                : throw std::runtime_error( "Unknown parser function: " + std::to_string( (size_t)(void*)fptr ) )
+        ;
+}
 
 
 template< class NumType, size_t cycles, typename Parser >
@@ -109,11 +128,6 @@ std::chrono::nanoseconds ppt( Parser parser )
     auto end = std::chrono::high_resolution_clock::now();
 
     std::chrono::nanoseconds ns = end - start;
-    auto ms = std::chrono::duration_cast< std::chrono::milliseconds >( ns );
-    std::cout << parser_namespace<NumType>(parser)
-        << " for " << cycles << " cycles took: " << ms.count() << "ms. "
-        << ((double)(ns.count()) / cycles) << "ns per cycle." 
-        << std::endl;
 
     return ns;
  }
@@ -122,14 +136,51 @@ std::chrono::nanoseconds ppt( Parser parser )
 template< class NumType >
 bool performance_test( NumType )
 {
-    enum : size_t { cycles = 100*1000*1000 };
-    
-    auto standard_ns = ppt< NumType, cycles >( standard_sto< NumType > );
-    auto vanorder_ns = ppt< NumType, cycles >( vanorder::sto< NumType > );
-    
+    enum : size_t { cycles = 10*1000*1000 };
+
+    std::array< std::chrono::nanoseconds, 9 > test_durations;
+    std::chrono::nanoseconds standard_ns = {};
+    std::chrono::nanoseconds vanorder_ns = {};
+    {
+        constexpr parser_type<NumType> parser = standard_sto< NumType >;
+        auto & ns = standard_ns;
+        for( auto & duration : test_durations )
+        {
+            duration = ppt< NumType, cycles >( parser );
+        }
+
+        std::sort( test_durations.begin(), test_durations.end() );
+
+        ns = test_durations[ test_durations.size() / 2 ];
+        auto ms = std::chrono::duration_cast< std::chrono::milliseconds >( ns );
+
+        std::cout << parser_name<NumType>( parser )
+            << " for " << cycles << " cycles took: " << ms.count() << "ms. "
+            << ((double)(ns.count()) / cycles) << "ns per call."
+            << std::endl;
+    }
+    {
+        constexpr parser_type<NumType> parser = vanorder::sto< NumType >;
+        auto & ns = vanorder_ns;
+        for( auto & duration : test_durations )
+        {
+            duration = ppt< NumType, cycles >( parser );
+        }
+
+        std::sort( test_durations.begin(), test_durations.end() );
+
+        ns = test_durations[ test_durations.size() / 2 ];
+        auto ms = std::chrono::duration_cast< std::chrono::milliseconds >( ns );
+
+        std::cout << parser_name<NumType>( parser )
+            << " for " << cycles << " cycles took: " << ms.count() << "ms. "
+            << ((double)(ns.count()) / cycles) << "ns per call."
+            << std::endl;
+    }
+
     if( standard_ns > vanorder_ns )
     {
-        std::cout << "Test success.\n" << std::endl;
+        std::cout << std::endl;
         return true;
     }
     else
@@ -142,16 +193,16 @@ bool performance_test( NumType )
 int main( int ac, char * av[] )
 {
     int success = 1;
-    
+
     success &= performance_test( int8_t() );
     success &= performance_test( int16_t() );
     success &= performance_test( int32_t() );
     success &= performance_test( int64_t() );
-    
+
     success &= performance_test( uint8_t() );
     success &= performance_test( uint16_t() );
     success &= performance_test( uint32_t() );
     success &= performance_test( uint64_t() );
-    
+
     return success ? 0 : 1 ;
 }

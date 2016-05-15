@@ -17,7 +17,8 @@ namespace vanorder
                             and std::numeric_limits< NumType >::is_signed
                             , NumType
              >::type
-    sto( const std::string & str )
+    constexpr
+    sto( char const * begin, char const * const end )
     {
         static_assert( std::numeric_limits< NumType >::is_specialized,
                        "Can work only with specialized numbers." );
@@ -33,23 +34,22 @@ namespace vanorder
 
         typename std::remove_cv<NumType>::type result = 0;
 
-        if( str.empty() )
+        if( begin == end )
         {
             throw std::length_error( utils::sto_func_name(result) );
         }
 
-        bool const is_neg = (str.front() == '-');
+        bool const is_neg = (*begin == '-');
+        begin += is_neg;
 
-        auto iter = str.begin() + ( is_neg ? 1 : 0 );
-
-        if( iter == str.end() )
+        if( begin == end )
         {
             throw std::invalid_argument( utils::sto_func_name(result) );
         }
 
-        for( ; iter != str.end() ; ++iter )
+        for( ; begin != end ; ++begin )
         {
-            signed c = *iter;
+            signed c = *begin;
             if( std::isdigit( c ) )
             {
                 c -= '0';
@@ -89,7 +89,16 @@ namespace vanorder
         return result;
     }
 
-
+    template< class NumType >
+    typename std::enable_if<
+                            std::numeric_limits< NumType >::is_integer
+                            and std::numeric_limits< NumType >::is_signed
+                            , NumType
+             >::type
+    sto( const std::string & str )
+    {
+        return sto< NumType >( &str[0], &str[ str.size() ] );
+    }
 
     template< class NumType >
     typename std::enable_if<
@@ -97,24 +106,26 @@ namespace vanorder
                             and std::numeric_limits< NumType >::is_signed == false
                             , NumType
              >::type
-    sto( const std::string & str )
+    constexpr
+    sto( char const * begin, char const * const end )
     {
         static_assert( std::numeric_limits< NumType >::is_specialized,
                        "Can work only with specialized numbers." );
 
         typename std::remove_cv<NumType>::type result = 0;
 
-        if( str.empty() )
+        if( begin == end )
         {
             throw std::length_error( utils::sto_func_name(result) );
         }
-        else if( str.front() == '-' )
+        else if( *begin == '-' )
         {
             throw std::domain_error( utils::sto_func_name(result) );
         }
 
-        for( auto c : str )
+        for( ; begin != end; ++begin )
         {
+            signed c = *begin;
             if( std::isdigit( c ) )
             {
                 c -= '0';
@@ -136,6 +147,17 @@ namespace vanorder
         }
 
         return result;
+    }
+
+    template< class NumType >
+    typename std::enable_if<
+                            std::numeric_limits< NumType >::is_integer
+                            and std::numeric_limits< NumType >::is_signed == false
+                            , NumType
+             >::type
+    sto( const std::string & str )
+    {
+        return sto< NumType >( &str[0], &str[ str.size() ] );
     }
 
     template< class NumType >
